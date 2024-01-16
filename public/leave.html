@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Leave Request</title>
 </head>
 <body>
     <h1>Leave Request</h1>
-    <form id="form">
+    <form class="form" method="post">
         <label for="reason">Reason:</label><br>
         <textarea id="reason" name="reason" rows="4" cols="50"></textarea><br>
 
@@ -19,6 +19,8 @@
 
         <input type="submit" value="submit">
     </form>
+
+    <div id="error-message"></div><br><br>
 
     <div id="alreadyRequested"></div>
 </body>

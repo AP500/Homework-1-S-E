@@ -72,10 +72,34 @@ app.post('/login', (req, res) => {
             }
 
             res.status(200).json({ success: true });
+
         });
     });
+
 });
 
+app.post('/leave', (req, res) => {
+    const { reason, startDate, endDate } = req.body;
+
+    const userId = req.session.userId;
+    const name = req.session.name;
+    const surname = req.session.surname;
+
+    const fullName = `${name}  ${surname}`;
+
+    const insertQuery = 'INSERT INTO Vacation (userId, name, reasonL, beginning, ending) VALUES (?, ?, ?, ?, ?)';
+
+    db.query(insertQuery, [userId, fullName,reason, startDate, endDate], (err, result) => {
+        if (err) {
+            console.error('Failed to insert data: ', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+            return;
+        }
+
+        console.log('Data inserted successfully.');
+        res.status(200).json({ success: true });
+    });
+});
 
 
 app.listen(port, () => {
