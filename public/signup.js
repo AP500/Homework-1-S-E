@@ -25,13 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await sendSignUpRequest(username, name, surname, department, password);
 
             if (response.ok) {
-                window.location.href = '../leave.html';
+                window.location.href = 'login.html';
             } else {
                 const data = await response.json();
                 displayError(data.error || 'Registration failed.', 'red');
             }
         } catch (error) {
-            console.error('Error:', error);
             displayError('An error occurred.', 'red');
         }
     }

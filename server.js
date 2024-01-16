@@ -2,13 +2,20 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const db = require('./db.js');
+const path = require('path');
 
 const app = express();
 const port = 3000;
 
+app.use(express.static('public'));
 app.use(bodyParser.json());
 
+app.get('/signup', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+});
+
 app.post('/signup', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
     const { username, name, surname, department, password } = req.body;
 
     bcrypt.hash(password, 10, (err, hashedPassword) => {
@@ -28,7 +35,11 @@ app.post('/signup', (req, res) => {
             }
 
             console.log('Data inserted successfully.');
-            res.status(200).json({ success: true });
+
+            if(result.affectedRows === 1){
+                res.status(200).json({ success: true });
+            }
+           
         });
     });
 });
