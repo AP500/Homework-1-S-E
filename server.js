@@ -15,7 +15,6 @@ app.get('/signup', (req, res) => {
 });
 
 app.post('/signup', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
     const { username, name, surname, department, password } = req.body;
 
     bcrypt.hash(password, 10, (err, hashedPassword) => {
@@ -35,14 +34,49 @@ app.post('/signup', (req, res) => {
             }
 
             console.log('Data inserted successfully.');
-
-            if(result.affectedRows === 1){
-                res.status(200).json({ success: true });
-            }
+            res.status(200).json({ success: true });
            
         });
     });
 });
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    const selectQuery = 'SELECT * FROM User WHERE username = ?';
+
+    db.query(selectQuery, [username], (err, results) => {
+        if (err) {
+            console.error('Failed to fetch user data: ', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+            return;
+        }
+
+        if (results.length === 0) {
+            res.status(401).json({ error: 'User not found' });
+            return;
+        }
+
+        const user = results[0];
+
+        bcrypt.compare(password, user.password, (compareErr, match) => {
+            if (compareErr) {
+                console.error('Failed to compare passwords: ', compareErr);
+                res.status(500).json({ error: 'Internal Server Error' });
+                return;
+            }
+
+            if (!match) {
+                res.status(401).json({ error: 'Incorrect password' });
+                return;
+            }
+
+            res.status(200).json({ success: true });
+        });
+    });
+});
+
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
