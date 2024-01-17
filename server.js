@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const db = require('./db.js');
@@ -6,6 +7,13 @@ const path = require('path');
 
 const app = express();
 const port = 3000;
+
+
+app.use(session({
+    secret: 'word123',
+    resave: false,
+    saveUninitialized: true
+}));
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
@@ -71,7 +79,12 @@ app.post('/login', (req, res) => {
                 return;
             }
 
-            res.status(200).json({ success: true });
+            if (user) {
+                req.session.name = user.name;
+                req.session.surname = user.surname;
+        
+                res.status(200).json({ success: true });
+            }
 
         });
     });
@@ -81,15 +94,14 @@ app.post('/login', (req, res) => {
 app.post('/leave', (req, res) => {
     const { reason, startDate, endDate } = req.body;
 
-    const userId = req.session.userId;
     const name = req.session.name;
     const surname = req.session.surname;
 
     const fullName = `${name}  ${surname}`;
 
-    const insertQuery = 'INSERT INTO Vacation (userId, name, reasonL, beginning, ending) VALUES (?, ?, ?, ?, ?)';
+    const insertQuery = 'INSERT INTO Vacation (name, reasonL, beginning, ending) VALUES (?, ?, ?, ?)';
 
-    db.query(insertQuery, [userId, fullName,reason, startDate, endDate], (err, result) => {
+    db.query(insertQuery, [fullName,reason, startDate, endDate], (err, result) => {
         if (err) {
             console.error('Failed to insert data: ', err);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -101,6 +113,19 @@ app.post('/leave', (req, res) => {
     });
 });
 
+app.get('/vacation', (req, res) => {
+    const selectQuery = 'SELECT * FROM Vacation';
+
+    db.query(selectQuery, (err, results) => {
+        if (err) {
+            console.error('Failed to fetch vacation data: ', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+            return;
+        }
+
+        res.status(200).json(results);
+    });
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

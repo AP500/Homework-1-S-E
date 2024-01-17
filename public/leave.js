@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const leaveForm = document.querySelector('.form');
+    const errorMessage = document.getElementById('error-message');
 
     leaveForm.addEventListener('submit', handleLeave);
 
