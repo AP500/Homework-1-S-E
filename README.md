@@ -18,7 +18,7 @@
 1. Make sure your server is running in a docker container correctly 
 2. Use the following command in order to run the node.js server: "node server.js"
 3. If the server is running correctly you can acces it on localhost:3030/index.html 
-4. Navigate throw the application and make a leave request 
+4. Navigate threw the application and make a leave request 
 
 
 
